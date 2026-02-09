@@ -26,7 +26,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(
-            @RequestHeader(TENANT_ID_HEADER) String tenantId,
+            @RequestHeader(value = TENANT_ID_HEADER, required = false) String tenantId,
             @Valid @RequestBody RegisterRequest request) {
         
         if (tenantId == null || tenantId.trim().isEmpty()) {
@@ -40,7 +40,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
-            @RequestHeader(TENANT_ID_HEADER) String tenantId,
+            @RequestHeader(value = TENANT_ID_HEADER, required = false) String tenantId,
             @Valid @RequestBody LoginRequest request) {
         
         if (tenantId == null || tenantId.trim().isEmpty()) {

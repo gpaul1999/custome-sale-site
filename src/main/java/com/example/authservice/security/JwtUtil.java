@@ -33,20 +33,20 @@ public class JwtUtil {
         claims.put("tenant_id", tenantId);
         
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(userId)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .claims(claims)
+                .subject(userId)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public Claims extractClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     public String extractUserId(String token) {
