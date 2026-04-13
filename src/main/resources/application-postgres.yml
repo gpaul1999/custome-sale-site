@@ -1,0 +1,34 @@
+# PostgreSQL profile — activate with: --spring.profiles.active=postgres
+# or set environment variable: SPRING_PROFILES_ACTIVE=postgres
+#
+# Required environment variables:
+#   DB_URL      e.g. jdbc:postgresql://localhost:5432/authdb
+#   DB_USERNAME e.g. postgres
+#   DB_PASSWORD your-password
+#
+# Optional:
+#   JWT_SECRET       (override default — MUST be changed in production)
+#   JWT_EXPIRATION   token TTL in ms (default 86400000 = 24 h)
+#   FIREBASE_ENABLED true/false
+
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/authdb}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:}
+    hikari:
+      connection-timeout: 20000
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 300000
+      max-lifetime: 1200000
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  h2:
+    console:
+      enabled: false   # disable H2 console when using PostgreSQL
