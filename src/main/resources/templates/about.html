@@ -5,63 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Giới thiệu – [[${brandName}]]</title>
   <link rel="stylesheet" th:href="@{/css/style.css}"/>
-  <style>
-    .timeline { position: relative; padding-left: 36px; }
-    .timeline::before {
-      content: '';
-      position: absolute;
-      left: 12px;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: var(--border);
-    }
-    .timeline-item { margin-bottom: 32px; position: relative; }
-    .timeline-dot {
-      position: absolute;
-      left: -30px;
-      top: 4px;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: var(--primary);
-      border: 3px solid var(--white);
-      box-shadow: 0 0 0 2px var(--primary);
-    }
-    .timeline-year {
-      font-size: .78rem;
-      font-weight: 700;
-      color: var(--accent);
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      margin-bottom: 4px;
-    }
-    .timeline-item h4 { margin-bottom: 4px; }
-    .timeline-item p  { font-size: .9rem; color: var(--muted); margin: 0; }
-    .value-card {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      padding: 24px;
-      background: var(--white);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-    .value-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: var(--radius);
-      background: rgba(13,71,161,.1);
-      color: var(--primary);
-      font-size: 1.4rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .value-card h4 { margin-bottom: 6px; }
-    .value-card p  { font-size: .9rem; color: var(--muted); margin: 0; }
-  </style>
 </head>
 <body>
 
@@ -82,19 +25,23 @@
 <!-- Mission -->
 <section class="section">
   <div class="container">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center;">
       <div class="about-img-placeholder">📡</div>
       <div>
-        <span class="label" style="color:var(--accent);font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:12px">Câu chuyện của chúng tôi</span>
-        <h2 style="font-size:1.9rem;color:var(--primary-dark);margin-bottom:16px">Hành trình 15 năm kết nối Việt Nam</h2>
-        <p style="color:var(--muted);margin-bottom:16px">
+        <span style="display:inline-flex;align-items:center;gap:6px;font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--primary);background:var(--primary-xlight);padding:4px 14px;border-radius:20px;margin-bottom:16px;">
+          Câu chuyện của chúng tôi
+        </span>
+        <h2 style="font-size:2rem; color:var(--text); margin-bottom:18px; line-height:1.25;">
+          Hành trình 15 năm kết nối Việt Nam
+        </h2>
+        <p style="color:var(--muted); margin-bottom:14px; line-height:1.75;">
           Thành lập năm 2009, [[${brandName}]] bắt đầu với sứ mệnh mang internet tốc độ cao đến mọi ngõ ngách của Việt Nam.
           Từ một công ty nhỏ với 20 nhân viên tại TP.HCM, chúng tôi đã phát triển thành nhà mạng lớn với hơn 2.000 nhân sự phủ khắp 63 tỉnh thành.
         </p>
-        <p style="color:var(--muted);margin-bottom:24px">
+        <p style="color:var(--muted); margin-bottom:28px; line-height:1.75;">
           Với tổng chiều dài hơn 50.000 km cáp quang triển khai trên cả nước, chúng tôi phục vụ hơn 500.000 khách hàng cá nhân và hàng nghìn doanh nghiệp lớn nhỏ.
         </p>
-        <a href="/contact" class="btn btn-primary">Liên hệ chúng tôi</a>
+        <a href="/contact" class="btn btn-primary btn-lg">Liên hệ chúng tôi →</a>
       </div>
     </div>
   </div>
@@ -118,8 +65,9 @@
     <div class="section-header">
       <span class="label">Giá trị cốt lõi</span>
       <h2>Những gì định hướng chúng tôi</h2>
+      <p>Bốn giá trị cốt lõi tạo nền tảng cho mọi quyết định và hành động của chúng tôi.</p>
     </div>
-    <div class="grid grid-2" style="max-width:860px;margin:0 auto">
+    <div class="grid grid-2" style="max-width:860px; margin:0 auto;">
       <div class="value-card">
         <div class="value-icon">🎯</div>
         <div>
@@ -159,7 +107,7 @@
       <span class="label">Lịch sử phát triển</span>
       <h2>Những cột mốc đáng nhớ</h2>
     </div>
-    <div style="max-width:640px;margin:0 auto" class="timeline">
+    <div style="max-width:640px; margin:0 auto;" class="timeline">
       <div class="timeline-item">
         <div class="timeline-dot"></div>
         <div class="timeline-year">2009</div>
@@ -200,6 +148,7 @@
     <div class="section-header">
       <span class="label">Đội ngũ lãnh đạo</span>
       <h2>Con người tạo nên sự khác biệt</h2>
+      <p>Những con người tâm huyết, giàu kinh nghiệm dẫn dắt chúng tôi tiến về phía trước.</p>
     </div>
     <div class="grid grid-4">
       <div class="team-card">
@@ -226,7 +175,20 @@
   </div>
 </section>
 
+<!-- CTA -->
+<section class="cta-banner">
+  <div class="container">
+    <h2>Hãy là một phần của hành trình này!</h2>
+    <p>Kết nối với chúng tôi để trải nghiệm dịch vụ viễn thông tốt nhất tại Việt Nam.</p>
+    <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+      <a href="/contact"  class="btn btn-white btn-lg">📞 Liên hệ ngay</a>
+      <a href="/services" class="btn btn-lg" style="background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.5);color:white;">Xem dịch vụ</a>
+    </div>
+  </div>
+</section>
+
 <div th:replace="~{fragments/footer :: footer}"></div>
 <script th:src="@{/js/main.js}"></script>
 </body>
 </html>
+

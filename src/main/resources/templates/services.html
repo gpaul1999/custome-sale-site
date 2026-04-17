@@ -5,127 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Dịch vụ – [[${brandName}]]</title>
   <link rel="stylesheet" th:href="@{/css/style.css}"/>
-  <style>
-    /* ── Tabs ── */
-    .tabs { display: flex; gap: 8px; margin-bottom: 40px; flex-wrap: wrap; }
-    .tab-btn {
-      padding: 10px 22px;
-      border-radius: 30px;
-      border: 2px solid var(--primary);
-      background: transparent;
-      color: var(--primary);
-      font-weight: 600;
-      cursor: pointer;
-      font-size: .9rem;
-      transition: all var(--transition);
-      font-family: inherit;
-    }
-    .tab-btn:hover,
-    .tab-btn.active { background: var(--primary); color: var(--white); }
-    .service-tab-content { display: none; }
-    .service-tab-content.active { display: block; }
-
-    /* ── Product card ── */
-    .product-card {
-      background: var(--white);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      transition: transform var(--transition), box-shadow var(--transition);
-      display: flex;
-      flex-direction: column;
-    }
-    .product-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 14px 36px rgba(0,0,0,.13);
-    }
-    .product-card-img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      background: var(--light-bg);
-    }
-    .product-card-img-placeholder {
-      width: 100%;
-      height: 180px;
-      background: linear-gradient(135deg, #e3eaf5, #c5d3e8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3rem;
-      color: var(--primary);
-    }
-    .product-card-body {
-      padding: 20px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .product-card-name {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--primary-dark);
-      margin: 0;
-    }
-    .product-card-desc {
-      font-size: .85rem;
-      color: var(--muted);
-      margin: 0;
-      flex: 1;
-    }
-    .product-card-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 12px;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .product-price {
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: var(--primary);
-    }
-    .product-price-group { display: flex; flex-direction: column; gap: 2px; }
-    .product-price-original {
-      font-size: .85rem;
-      font-weight: 500;
-      color: var(--muted);
-      text-decoration: line-through;
-    }
-    .product-price-sale {
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: var(--accent);
-    }
-    .badge-sale {
-      background: var(--accent);
-      color: #fff;
-      font-size: .72rem;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 20px;
-      white-space: nowrap;
-    }
-
-    /* ── Empty state ── */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--muted);
-    }
-    .empty-state .empty-icon { font-size: 3rem; margin-bottom: 12px; }
-    .empty-state p { font-size: .95rem; }
-
-    /* ── Responsive ── */
-    @media (max-width: 768px) {
-      .grid-4 { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 480px) {
-      .grid-4 { grid-template-columns: 1fr; }
-    }
-  </style>
 </head>
 <body>
 
@@ -147,14 +26,13 @@
 <section class="section">
   <div class="container">
 
-    <!-- Nếu không có product type nào -->
     <div th:if="${#lists.isEmpty(productTypes)}" class="empty-state">
       <div class="empty-icon">📦</div>
       <p>Chưa có danh mục sản phẩm nào.</p>
     </div>
 
-    <!-- Tabs: mỗi ProductType là 1 tab -->
     <div th:unless="${#lists.isEmpty(productTypes)}">
+      <!-- Tabs -->
       <div class="tabs">
         <button th:each="pt, iter : ${productTypes}"
                 th:id="'btn-' + ${pt.id}"
@@ -165,72 +43,71 @@
         </button>
       </div>
 
-      <!-- Nội dung từng tab -->
+      <!-- Tab contents -->
       <div th:each="pt, iter : ${productTypes}"
            th:id="'tab-' + ${pt.id}"
            class="service-tab-content"
            th:classappend="${iter.first} ? 'active'">
 
-        <!-- Header tab -->
-        <div class="section-header" style="margin-bottom:32px; text-align:left; max-width:100%;">
-          <span class="label" th:text="${pt.syntax}"></span>
-          <h2 th:text="${pt.description}"></h2>
+        <div style="margin-bottom:36px;">
+          <span style="display:inline-block;font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--primary);background:var(--primary-xlight);padding:4px 14px;border-radius:20px;margin-bottom:10px;"
+                th:text="${pt.syntax}"></span>
+          <h2 style="font-size:1.7rem;color:var(--text);margin:0;" th:text="${pt.description}"></h2>
         </div>
 
-        <!-- Danh sách sản phẩm -->
         <div th:with="products=${productsByType[pt.id]}">
-
-          <!-- Empty state cho tab -->
           <div th:if="${products == null or #lists.isEmpty(products)}" class="empty-state">
             <div class="empty-icon">🔍</div>
             <p>Chưa có sản phẩm nào trong danh mục này.</p>
           </div>
 
-          <!-- Grid sản phẩm -->
-          <div th:unless="${products == null or #lists.isEmpty(products)}"
-               class="grid grid-4">
+          <div th:unless="${products == null or #lists.isEmpty(products)}" class="grid grid-4">
             <div th:each="product : ${products}" class="product-card">
 
-              <!-- Ảnh: lấy ảnh đầu tiên trong list, nếu không có thì placeholder -->
-              <img th:if="${product.images != null and !#lists.isEmpty(product.images)}"
-                   th:src="${product.images[0]}"
-                   th:alt="${product.syntax}"
-                   class="product-card-img"
-                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-              <div th:if="${product.images != null and !#lists.isEmpty(product.images)}"
-                   class="product-card-img-placeholder" style="display:none">📦</div>
-              <div th:unless="${product.images != null and !#lists.isEmpty(product.images)}"
-                   class="product-card-img-placeholder">📦</div>
+              <!-- Ảnh -->
+              <div style="position:relative;">
+                <img th:if="${product.images != null and !#lists.isEmpty(product.images)}"
+                     th:src="${product.images[0]}"
+                     th:alt="${product.syntax}"
+                     class="product-card-img"
+                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                <div th:if="${product.images != null and !#lists.isEmpty(product.images)}"
+                     class="product-card-img-placeholder" style="display:none">📦</div>
+                <div th:unless="${product.images != null and !#lists.isEmpty(product.images)}"
+                     class="product-card-img-placeholder">📦</div>
+                <!-- Sale badge trên ảnh -->
+                <span th:if="${product.saleOff and product.salePercent != null and product.salePercent > 0}"
+                      class="badge-sale"
+                      style="position:absolute;top:10px;left:10px;">
+                  🔥 -<span th:text="${product.salePercent}"></span>%
+                </span>
+              </div>
 
               <div class="product-card-body">
                 <h3 class="product-card-name" th:text="${product.syntax}"></h3>
                 <p class="product-card-desc" th:text="${product.description}"></p>
 
                 <div class="product-card-footer">
-                  <div class="product-price-group">
-                    <!-- Có sale: giá gốc gạch ngang + giá sau sale -->
-                    <div th:if="${product.saleOff and product.salePrice != null}">
-                      <span class="product-price-original"
-                            th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + ' đ'}"></span>
-                      <span class="product-price-sale"
-                            th:text="${#numbers.formatDecimal(product.salePrice, 0, 'COMMA', 0, 'POINT') + ' đ'}"></span>
-                    </div>
-                    <!-- Không sale: chỉ hiện giá bình thường -->
-                    <div th:unless="${product.saleOff and product.salePrice != null}">
-                      <span class="product-price"
-                            th:if="${product.price != null}"
-                            th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + ' đ'}"></span>
-                      <span class="product-price" th:unless="${product.price != null}">Liên hệ</span>
-                    </div>
+                  <!-- Có sale -->
+                  <div th:if="${product.saleOff and product.salePrice != null}" class="product-price-group">
+                    <span class="product-price-original"
+                          th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + ' đ'}"></span>
+                    <span class="product-price-sale"
+                          th:text="${#numbers.formatDecimal(product.salePrice, 0, 'COMMA', 0, 'POINT') + ' đ'}"></span>
                   </div>
-
-                  <!-- Badge % sale -->
-                  <span th:if="${product.saleOff and product.salePercent != null and product.salePercent > 0}"
-                        class="badge-sale">🔥 -<span th:text="${product.salePercent}"></span>%</span>
+                  <!-- Không sale -->
+                  <div th:unless="${product.saleOff and product.salePrice != null}">
+                    <span class="product-price"
+                          th:if="${product.price != null}"
+                          th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + ' đ'}"></span>
+                    <span class="product-price" th:unless="${product.price != null}"
+                          style="color:var(--accent);">Liên hệ</span>
+                  </div>
                 </div>
 
                 <a th:href="@{/product/{id}(id=${product.id})}"
-                   class="btn btn-primary" style="width:100%; justify-content:center; margin-top:8px;">
+                   class="btn btn-primary"
+                   style="width:100%; justify-content:center; margin-top:12px;">
                   Xem chi tiết →
                 </a>
               </div>
@@ -247,8 +124,8 @@
 <section class="cta-banner">
   <div class="container">
     <h2>Chưa tìm thấy sản phẩm phù hợp?</h2>
-    <p>Liên hệ đội ngũ tư vấn để được hỗ trợ chọn lựa sản phẩm phù hợp nhất.</p>
-    <a href="/contact" class="btn btn-white">Liên hệ tư vấn miễn phí</a>
+    <p>Liên hệ đội ngũ tư vấn để được hỗ trợ chọn lựa sản phẩm phù hợp nhất với nhu cầu của bạn.</p>
+    <a href="/contact" class="btn btn-white btn-lg">📞 Liên hệ tư vấn miễn phí</a>
   </div>
 </section>
 
@@ -256,3 +133,4 @@
 <script th:src="@{/js/main.js}"></script>
 </body>
 </html>
+

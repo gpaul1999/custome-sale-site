@@ -5,282 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title th:text="${product.syntax} + ' – ' + ${brandName}">Chi tiết sản phẩm</title>
   <link rel="stylesheet" th:href="@{/css/style.css}"/>
-  <style>
-    /* ── Gallery ── */
-    .gallery { display: flex; flex-direction: column; gap: 12px; }
-    .gallery-main {
-      width: 100%;
-      aspect-ratio: 4/3;
-      border-radius: var(--radius);
-      overflow: hidden;
-      background: var(--light-bg);
-      position: relative;
-    }
-    .gallery-main img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-    }
-    .gallery-main-placeholder {
-      width: 100%; height: 100%;
-      background: linear-gradient(135deg, #e3eaf5, #c5d3e8);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 5rem; color: var(--primary);
-    }
-    .gallery-thumbs { display: flex; gap: 10px; flex-wrap: wrap; }
-    .gallery-thumb {
-      width: 72px; height: 72px;
-      border-radius: 6px;
-      overflow: hidden;
-      border: 2px solid transparent;
-      cursor: pointer;
-      transition: border-color var(--transition);
-    }
-    .gallery-thumb.active,
-    .gallery-thumb:hover { border-color: var(--primary); }
-    .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; }
-
-    /* ── Info panel ── */
-    .product-info { display: flex; flex-direction: column; gap: 20px; }
-    .product-title { font-size: 1.8rem; color: var(--primary-dark); margin: 0; }
-    .product-type-tag {
-      display: inline-block;
-      background: rgba(13,71,161,.1);
-      color: var(--primary);
-      font-size: .78rem;
-      font-weight: 700;
-      padding: 4px 12px;
-      border-radius: 20px;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-    }
-    .price-block { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-    .price-original {
-      font-size: 1.1rem;
-      color: var(--muted);
-      text-decoration: line-through;
-    }
-    .price-sale {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--accent);
-    }
-    .price-normal {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--primary);
-    }
-    .badge-sale {
-      background: var(--accent);
-      color: #fff;
-      font-size: .8rem;
-      font-weight: 700;
-      padding: 4px 14px;
-      border-radius: 20px;
-    }
-    .badge-contact {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--primary);
-    }
-
-    /* ── Status badges ── */
-    .status-row { display: flex; gap: 10px; flex-wrap: wrap; }
-    .status-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: .82rem;
-      font-weight: 600;
-    }
-    .status-instock  { background: #e8f5e9; color: #2e7d32; }
-    .status-nostock  { background: #fce4ec; color: #c62828; }
-    .status-vat      { background: #e3f2fd; color: #1565c0; }
-
-    /* ── Short description list ── */
-    .short-desc-list {
-      list-style: none; padding: 0; margin: 0;
-      display: flex; flex-direction: column; gap: 8px;
-    }
-    .short-desc-list li {
-      display: flex; align-items: flex-start; gap: 10px;
-      font-size: .92rem;
-    }
-    .short-desc-list li::before {
-      content: '✓';
-      color: var(--accent);
-      font-weight: 700;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-
-    /* ── Layout 2 cột ── */
-    .detail-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 48px;
-      align-items: start;
-    }
-
-    /* ── Section blocks bên dưới ── */
-    .detail-section {
-      background: var(--white);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 28px 32px;
-    }
-    .detail-section h3 {
-      font-size: 1.05rem;
-      color: var(--primary-dark);
-      margin-bottom: 16px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid var(--border);
-    }
-    .detail-desc-list {
-      list-style: none; padding: 0; margin: 0;
-      display: flex; flex-direction: column; gap: 10px;
-    }
-    .detail-desc-list li {
-      font-size: .92rem;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border);
-      color: var(--text);
-    }
-    .detail-desc-list li:last-child { border-bottom: none; }
-    .tech-list {
-      display: flex; flex-wrap: wrap; gap: 8px;
-    }
-    .tech-tag {
-      background: rgba(13,71,161,.08);
-      color: var(--primary);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: .82rem;
-      font-weight: 600;
-    }
-
-    /* ── Brand card ── */
-    .brand-card {
-      display: flex; align-items: center; gap: 16px;
-      padding: 20px;
-      background: var(--light-bg);
-      border-radius: var(--radius);
-    }
-    .brand-logo {
-      width: 60px; height: 60px;
-      border-radius: 50%;
-      object-fit: contain;
-      background: var(--white);
-      padding: 6px;
-    }
-    .brand-logo-placeholder {
-      width: 60px; height: 60px;
-      border-radius: 50%;
-      background: var(--white);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem;
-    }
-    .brand-name { font-size: 1rem; font-weight: 700; color: var(--primary-dark); }
-
-    /* ── Special / Final description ── */
-    .special-box {
-      background: linear-gradient(135deg, rgba(13,71,161,.05), rgba(255,111,0,.05));
-      border-left: 4px solid var(--accent);
-      border-radius: 0 var(--radius) var(--radius) 0;
-      padding: 16px 20px;
-      font-size: .92rem;
-      color: var(--text);
-    }
-
-    /* ── Promotion cards ── */
-    .promo-card {
-      border-radius: var(--radius);
-      padding: 12px 16px;
-      display: flex; flex-direction: column; gap: 4px;
-    }
-    .promo-active {
-      background: linear-gradient(135deg, rgba(255,111,0,.07), rgba(255,171,64,.07));
-      border-left: 3px solid var(--accent);
-    }
-    .promo-expired {
-      background: var(--light-bg);
-      border-left: 3px solid var(--border);
-      opacity: .65;
-    }
-    .promo-header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .promo-title  { font-size: .9rem; font-weight: 700; color: var(--text); }
-    .promo-badge  {
-      font-size: .72rem; font-weight: 700;
-      padding: 2px 8px; border-radius: 10px;
-    }
-    .promo-badge-on  { background: #fff3e0; color: var(--accent); }
-    .promo-badge-off { background: var(--border); color: var(--muted); }
-    .promo-desc { font-size: .85rem; color: var(--muted); margin: 0; }
-    .promo-date { font-size: .78rem; color: var(--muted); }
-
-    /* ── Tech table (key : value) ── */
-    .tech-table { width: 100%; border-collapse: collapse; }
-    .tech-table tr { border-bottom: 1px solid var(--border); }
-    .tech-table tr:last-child { border-bottom: none; }
-    .tech-key {
-      padding: 10px 16px 10px 0;
-      font-size: .88rem;
-      font-weight: 700;
-      color: var(--primary-dark);
-      white-space: nowrap;
-      width: 38%;
-      vertical-align: top;
-    }
-    .tech-val {
-      padding: 10px 0;
-      font-size: .88rem;
-      color: var(--text);
-      vertical-align: top;
-    }
-
-    /* ── Brand detail card ── */
-    .brand-detail-card { display: flex; flex-direction: column; gap: 16px; }
-    .brand-detail-header { display: flex; align-items: center; gap: 16px; }
-    .brand-detail-logo {
-      width: 72px; height: 72px;
-      border-radius: var(--radius);
-      object-fit: contain;
-      background: var(--light-bg);
-      padding: 8px;
-      border: 1px solid var(--border);
-    }
-    .brand-detail-logo-placeholder {
-      width: 72px; height: 72px;
-      border-radius: var(--radius);
-      background: var(--light-bg);
-      border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2rem;
-    }
-    .brand-detail-name { font-size: 1.1rem; font-weight: 700; color: var(--primary-dark); }
-    .brand-detail-sub  { font-size: .82rem; color: var(--muted); margin-top: 2px; }
-    .brand-detail-desc {
-      list-style: none; padding: 0; margin: 0;
-      display: flex; flex-direction: column; gap: 8px;
-      border-top: 1px solid var(--border);
-      padding-top: 14px;
-    }
-    .brand-detail-desc li {
-      font-size: .9rem;
-      color: var(--text);
-      display: flex; align-items: flex-start; gap: 8px;
-    }
-    .brand-detail-desc li::before {
-      content: '•';
-      color: var(--primary);
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    /* ── Responsive ── */
-    @media (max-width: 900px) {
-      .detail-layout { grid-template-columns: 1fr; }
-    }
-  </style>
 </head>
 <body>
 
@@ -306,7 +30,6 @@
 
       <!-- CỘT TRÁI: Gallery ảnh -->
       <div class="gallery">
-        <!-- Ảnh chính -->
         <div class="gallery-main" id="galleryMain">
           <img th:if="${product.images != null and !#lists.isEmpty(product.images)}"
                th:src="${product.images[0]}"
@@ -316,7 +39,6 @@
           <div th:unless="${product.images != null and !#lists.isEmpty(product.images)}"
                class="gallery-main-placeholder">📦</div>
         </div>
-        <!-- Thumbnails nếu có nhiều ảnh -->
         <div class="gallery-thumbs"
              th:if="${product.images != null and #lists.size(product.images) > 1}">
           <div th:each="img, iter : ${product.images}"
@@ -341,7 +63,6 @@
 
         <!-- Giá -->
         <div class="price-block">
-          <!-- Có sale -->
           <div th:if="${product.saleOff and product.salePrice != null}" class="price-block">
             <span class="price-original"
                   th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + ' đ'}"></span>
@@ -349,12 +70,10 @@
                   th:text="${#numbers.formatDecimal(product.salePrice, 0, 'COMMA', 0, 'POINT') + ' đ'}"></span>
             <span class="badge-sale">🔥 -<span th:text="${product.salePercent}"></span>%</span>
           </div>
-          <!-- Không sale, có giá -->
           <span th:unless="${product.saleOff and product.salePrice != null}"
                 class="price-normal"
                 th:if="${product.price != null}"
                 th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + ' đ'}"></span>
-          <!-- Liên hệ -->
           <span th:if="${product.price == null}" class="badge-contact">Liên hệ báo giá</span>
         </div>
 
@@ -371,17 +90,17 @@
             <li th:each="item : ${detail.shortDescription}" th:text="${item}"></li>
           </ul>
         </div>
-        <!-- Fallback nếu không có detail -->
         <p th:if="${detail == null}" th:text="${product.description}" style="color:var(--muted)"></p>
 
         <!-- Tóm tắt -->
-        <div th:if="${detail != null and detail.summaryDescription != null}">
-          <p th:text="${detail.summaryDescription}" style="color:var(--muted); font-size:.92rem;"></p>
+        <div th:if="${detail != null and detail.summaryDescription != null}"
+             style="background:var(--light-bg); border-radius:var(--radius); padding:14px 18px;">
+          <p th:text="${detail.summaryDescription}" style="color:var(--text-secondary); font-size:.92rem; margin:0;"></p>
         </div>
 
-        <!-- Ưu đãi (promotions) -->
+        <!-- Ưu đãi -->
         <div th:if="${detail != null and detail.promotions != null and !#lists.isEmpty(detail.promotions)}">
-          <div style="font-size:.88rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px;">
+          <div style="font-size:.82rem; font-weight:700; color:var(--accent-dark); text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px;">
             🎁 Ưu đãi hiện có
           </div>
           <div style="display:flex; flex-direction:column; gap:8px;">
@@ -402,7 +121,7 @@
           </div>
         </div>
 
-        <!-- Brand -->
+        <!-- Brand (quick) -->
         <div th:if="${detail != null and detail.brandName != null}" class="brand-card">
           <img th:if="${detail.brandLogo != null}"
                th:src="${detail.brandLogo}" th:alt="${detail.brandName}"
@@ -412,18 +131,23 @@
           <div th:unless="${detail.brandLogo != null}" class="brand-logo-placeholder">🏢</div>
           <div>
             <div class="brand-name" th:text="${detail.brandName}"></div>
-            <div style="font-size:.82rem; color:var(--muted);">Nhà cung cấp</div>
+            <div style="font-size:.8rem; color:var(--muted);">Nhà cung cấp</div>
           </div>
         </div>
 
         <!-- Nút hành động -->
-        <div style="display:flex; flex-direction:column; gap:10px;">
+        <div style="display:flex; flex-direction:column; gap:10px; padding-top:8px;">
           <div style="display:flex; gap:12px; flex-wrap:wrap;">
-            <a href="/contact" class="btn btn-primary">🛒 Đặt hàng ngay</a>
-            <a href="/contact" class="btn btn-accent">💬 Yêu cầu tư vấn</a>
+            <a href="/contact" class="btn btn-primary btn-lg" style="flex:1; justify-content:center;">
+              🛒 Đặt hàng ngay
+            </a>
+            <a href="/contact" class="btn btn-accent btn-lg" style="flex:1; justify-content:center;">
+              💬 Yêu cầu tư vấn
+            </a>
           </div>
           <a href="/services"
-             style="font-size:.82rem; color:var(--muted); display:inline-flex; align-items:center; gap:4px; margin-top:4px; width:fit-content;">
+             class="btn btn-ghost btn-sm"
+             style="width:fit-content; align-self:center; color:var(--muted);">
             ← Quay lại danh sách
           </a>
         </div>
@@ -431,8 +155,8 @@
       </div>
     </div>
 
-    <!-- ── PHẦN CHI TIẾT BÊN DƯỚI ─────────────────────────────────────────── -->
-    <div th:if="${detail != null}" style="margin-top: 48px; display:flex; flex-direction:column; gap:24px;">
+    <!-- ── PHẦN CHI TIẾT BÊN DƯỚI ── -->
+    <div th:if="${detail != null}" style="margin-top: 56px; display:flex; flex-direction:column; gap:24px;">
 
       <!-- Mô tả sản phẩm -->
       <div th:if="${detail.detailDescription != null and !#lists.isEmpty(detail.detailDescription)}"
@@ -441,7 +165,7 @@
         <div style="display:flex; flex-direction:column; gap:12px;">
           <p th:each="item : ${detail.detailDescription}"
              th:text="${item}"
-             style="margin:0; font-size:.93rem; line-height:1.7; color:var(--text);"></p>
+             style="margin:0; font-size:.92rem; line-height:1.75; color:var(--text-secondary);"></p>
         </div>
       </div>
 
@@ -452,7 +176,6 @@
         <table class="tech-table">
           <tbody>
             <tr th:each="fn : ${detail.technicalFunctions}">
-              <!-- Mỗi item có dạng "Tên: Mô tả", split tại dấu : đầu tiên -->
               <td class="tech-key"
                   th:text="${#strings.contains(fn, ':') ? #strings.substringBefore(fn, ':') : fn}"></td>
               <td class="tech-val"
@@ -462,9 +185,9 @@
         </table>
       </div>
 
-      <!-- Thương hiệu sản xuất -->
+      <!-- Thương hiệu -->
       <div th:if="${detail != null and detail.brandName != null}" class="detail-section">
-        <h3>🏢 Thương hiệu</h3>
+        <h3>🏢 Thương hiệu sản xuất</h3>
         <div class="brand-detail-card">
           <div class="brand-detail-header">
             <img th:if="${detail.brandLogo != null}"
@@ -486,6 +209,12 @@
       </div>
 
     </div>
+
+    <!-- Back button bottom -->
+    <div style="margin-top:40px; text-align:center;">
+      <a href="/services" class="btn btn-outline">← Quay lại danh sách sản phẩm</a>
+    </div>
+
   </div>
 </section>
 
@@ -493,22 +222,22 @@
 <section class="cta-banner">
   <div class="container">
     <h2>Quan tâm đến sản phẩm này?</h2>
-    <p>Liên hệ ngay để được tư vấn và hỗ trợ đăng ký.</p>
-    <a href="/contact" class="btn btn-white">Liên hệ tư vấn miễn phí</a>
+    <p>Liên hệ ngay để được tư vấn và hỗ trợ đặt hàng trong vòng 30 phút.</p>
+    <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+      <a href="/contact" class="btn btn-white btn-lg">📞 Liên hệ tư vấn miễn phí</a>
+    </div>
   </div>
 </section>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
 <script th:src="@{/js/main.js}"></script>
 <script>
-  function switchImg(thumb, src) {
-    var mainImg = document.getElementById('mainImg');
-    if (mainImg) mainImg.src = src;
-    document.querySelectorAll('.gallery-thumb').forEach(function(t) {
-      t.classList.remove('active');
-    });
-    thumb.classList.add('active');
-  }
+function switchImg(thumb, src) {
+  document.getElementById('mainImg') && (document.getElementById('mainImg').src = src);
+  document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+  thumb.classList.add('active');
+}
 </script>
 </body>
 </html>
+

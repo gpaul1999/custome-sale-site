@@ -18,8 +18,10 @@
         <li><a href="/services" th:classappend="${activePage == 'services'} ? 'active'">Dịch vụ</a></li>
         <li><a href="/about"    th:classappend="${activePage == 'about'}    ? 'active'">Giới thiệu</a></li>
         <li><a href="/contact"  th:classappend="${activePage == 'contact'}  ? 'active'">Liên hệ</a></li>
-        <li><a href="/login"    class="btn-header"
-               th:classappend="${activePage == 'login'} ? 'active'">Đăng nhập</a></li>
+        <li><a href="/contact" class="btn btn-accent btn-sm"
+               style="margin-left:8px; border:none; box-shadow:0 2px 8px rgba(245,158,11,.3);">
+          📞 Tư vấn ngay
+        </a></li>
       </ul>
 
       <!-- Mobile toggle -->
@@ -32,3 +34,4 @@
 
 </body>
 </html>
+
