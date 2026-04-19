@@ -29,6 +29,12 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    clean-on-validation-error: false   # KHÔNG tự xóa DB trên production
+    baseline-on-migrate: false
+
   h2:
     console:
       enabled: false   # disable H2 console when using PostgreSQL
