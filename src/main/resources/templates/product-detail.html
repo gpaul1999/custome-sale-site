@@ -55,8 +55,11 @@
       <div class="product-info">
 
         <!-- Tag loại sản phẩm -->
-        <div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
           <span class="product-type-tag" th:text="${product.productTypeName}"></span>
+          <span th:if="${product.productCategoryName != null}"
+                style="display:inline-block;font-size:.78rem;font-weight:600;padding:4px 12px;border-radius:12px;background:var(--accent-light);color:var(--accent-dark);"
+                th:text="${product.productCategoryName}"></span>
         </div>
 
         <!-- Tên -->

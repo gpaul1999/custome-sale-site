@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{admin/fragments/layout :: head('Danh mục sản phẩm')}"></head>
+<body>
+<div th:insert="~{admin/fragments/layout :: sidebar}"></div>
+<div class="admin-main">
+  <div class="admin-topbar">
+    <h1 th:text="${editMode} ? '✏️ Sửa danh mục sản phẩm' : '➕ Thêm danh mục sản phẩm'"></h1>
+    <span style="font-size:.82rem;color:#90a4ae;">[[${brandName}]] Admin</span>
+  </div>
+  <div class="admin-content">
+    <div class="page-header">
+      <h2 th:text="${editMode} ? 'Sửa danh mục sản phẩm' : 'Thêm danh mục sản phẩm'"></h2>
+      <a th:href="@{/admin/product-categories}" class="btn-admin-secondary">← Quay lại</a>
+    </div>
+    <div class="admin-card">
+      <form th:action="@{/admin/product-categories}"
+            method="post" th:object="${category}">
+        <input type="hidden" th:field="*{id}" th:if="${editMode}"/>
+
+        <div class="field">
+          <label>Loại sản phẩm <span style="color:red">*</span></label>
+          <select th:field="*{productType.id}" required>
+            <option value="">-- Chọn loại sản phẩm --</option>
+            <option th:each="type : ${productTypes}"
+                    th:value="${type.id}"
+                    th:text="${type.syntax}">
+            </option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Syntax (tên danh mục) <span style="color:red">*</span></label>
+          <input type="text" th:field="*{syntax}" placeholder="Gói data, Gói gia đình, ..." required/>
+        </div>
+
+        <div class="field">
+          <label>Mô tả</label>
+          <textarea th:field="*{description}" placeholder="Mô tả chi tiết về danh mục sản phẩm"></textarea>
+        </div>
+
+        <div class="field" style="flex-direction:row;align-items:center;gap:8px;">
+          <input type="checkbox" th:field="*{enabled}" id="enabledCheck" style="width:16px;height:16px;"/>
+          <label for="enabledCheck" style="margin:0;cursor:pointer;">Hoạt động</label>
+        </div>
+
+        <div style="display:flex;gap:12px;margin-top:16px;">
+          <button type="submit" class="btn-admin-primary" th:text="${editMode} ? 'Lưu thay đổi' : 'Tạo mới'"></button>
+          <a th:href="@{/admin/product-categories}" class="btn-admin-secondary">Hủy</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+

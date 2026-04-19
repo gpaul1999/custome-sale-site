@@ -1,6 +1,7 @@
 package com.customsalesite.dto.admin;
 
 import lombok.Data;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class ProductFullRequest {
     private boolean saleOff;
     private Integer salePercent;
     private List<String> images;
-    private Long productTypeId;
+    private Long productCategoryId;
     private boolean enabled = true;
     private boolean vat;
     private boolean inStock = true;

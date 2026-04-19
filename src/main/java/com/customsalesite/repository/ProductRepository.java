@@ -13,10 +13,10 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
-    List<Product> findByProductTypeId(Long productTypeId);
+    List<Product> findByProductCategoryId(Long productCategoryId);
+    List<Product> findByProductCategoryIdAndEnabled(Long productCategoryId, boolean enabled);
     List<Product> findBySaleOff(boolean saleOff);
     List<Product> findByEnabled(boolean enabled);
-    List<Product> findByProductTypeIdAndEnabled(Long productTypeId, boolean enabled);
 
     @Query("select p from Product p where p.enabled = true and (lower(p.syntax) like lower(concat('%', :q, '%')) or lower(p.description) like lower(concat('%', :q, '%'))) ")
     Page<Product> searchByKeyword(@Param("q") String q, Pageable pageable);

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{admin/fragments/layout :: head('Danh mục sản phẩm')}"></head>
+<body>
+<div th:insert="~{admin/fragments/layout :: sidebar}"></div>
+<div class="admin-main">
+  <div class="admin-topbar">
+    <h1>📑 Danh mục sản phẩm</h1>
+    <span style="font-size:.82rem;color:#90a4ae;">[[${brandName}]] Admin</span>
+  </div>
+  <div class="admin-content">
+    <div th:if="${successMsg}" class="flash-success" th:text="${successMsg}"></div>
+    <div th:if="${errorMsg}"   class="flash-error"   th:text="${errorMsg}"></div>
+    <div class="page-header">
+      <h2>Danh sách danh mục sản phẩm</h2>
+      <a th:href="@{/admin/product-categories/new}" class="btn-admin-primary">+ Thêm mới</a>
+    </div>
+    <div class="table-wrapper">
+    <table class="admin-table">
+      <thead>
+        <tr><th>ID</th><th>Danh mục</th><th>Loại sản phẩm</th><th>Mô tả</th><th>Trạng thái</th><th>Hành động</th></tr>
+      </thead>
+      <tbody>
+        <tr th:each="item : ${categories}">
+          <td th:text="${item.id}"></td>
+          <td th:text="${item.syntax}"></td>
+          <td th:text="${item.productType.syntax}"></td>
+          <td style="color:#90a4ae;font-size:.9rem;" th:text="${item.description != null ? (#strings.length(item.description) > 50 ? #strings.substring(item.description, 0, 50) + '...' : item.description) : '-'}"></td>
+          <td>
+            <span th:if="${item.enabled}"  class="badge-on">Hoạt động</span>
+            <span th:unless="${item.enabled}" class="badge-off">Đã tắt</span>
+          </td>
+          <td style="display:flex;gap:8px;">
+            <a th:href="@{/admin/product-categories/{id}/edit(id=${item.id})}" class="btn-admin-warn">Sửa</a>
+            <form th:action="@{/admin/product-categories/{id}/toggle(id=${item.id})}" method="post" style="display:inline">
+              <button type="submit" class="btn-admin-danger" th:text="${item.enabled} ? 'Tắt' : 'Bật'"></button>
+            </form>
+          </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(categories)}">
+          <td colspan="6" style="text-align:center;color:#90a4ae;padding:32px;">Chưa có dữ liệu.</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
+

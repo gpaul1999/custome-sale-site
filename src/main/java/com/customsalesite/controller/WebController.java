@@ -35,6 +35,7 @@ public class WebController {
     @GetMapping("/services")
     public String services(
             @RequestParam(required = false) Long typeId,
+            @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
@@ -71,6 +72,10 @@ public class WebController {
             }
         }
 
+        // Get categories for active type
+        List<com.customsalesite.dto.ProductCategoryResponse> categoriesForType =
+                activeTypeId != null ? dataService.getProductCategoriesByType(activeTypeId) : List.of();
+
         // Brands available for the active tab (for dropdown)
         List<BrandResponse> brandsForType =
                 activeTypeId != null ? dataService.getBrandsByProductType(activeTypeId) : List.of();
@@ -78,6 +83,7 @@ public class WebController {
         model.addAttribute("productTypes", productTypes);
         model.addAttribute("productsByType", productsByType);
         model.addAttribute("activeTypeId", activeTypeId);
+        model.addAttribute("categoriesForType", categoriesForType);
         model.addAttribute("brandsForType", brandsForType);
         model.addAttribute("keyword", keyword);
         model.addAttribute("minPrice", minPrice);

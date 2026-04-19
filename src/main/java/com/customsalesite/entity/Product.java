@@ -33,8 +33,8 @@ public class Product {
     private Integer salePercent;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_type_id", nullable = false)
-    private ProductType productType;
+    @JoinColumn(name = "product_category_id", nullable = false)
+    private ProductCategory productCategory;
 
     @Convert(converter = StringListConverter.class)
     @Column(columnDefinition = "TEXT")

@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public class DataService {
 
     private final ProductTypeRepository productTypeRepository;
+    private final ProductCategoryRepository productCategoryRepository;
     private final BrandRepository brandRepository;
     private final ProductRepository productRepository;
     private final ProductDetailRepository productDetailRepository;
@@ -63,7 +64,9 @@ public class DataService {
     }
 
     public List<ProductResponse> getProductsByType(Long productTypeId) {
-        return productRepository.findByProductTypeIdAndEnabled(productTypeId, true).stream()
+        // Get all categories for this type, then get all products from those categories
+        return productCategoryRepository.findByProductTypeIdAndEnabled(productTypeId, true).stream()
+                .flatMap(category -> productRepository.findByProductCategoryIdAndEnabled(category.getId(), true).stream())
                 .map(this::toProductResponse)
                 .collect(Collectors.toList());
     }
@@ -71,6 +74,18 @@ public class DataService {
     public List<BrandResponse> getBrandsByProductType(Long productTypeId) {
         return brandRepository.findByProductTypeId(productTypeId).stream()
                 .map(this::toBrandResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProductCategoryResponse> getProductCategoriesByType(Long productTypeId) {
+        return productCategoryRepository.findByProductTypeIdAndEnabled(productTypeId, true).stream()
+                .map(this::toProductCategoryResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProductResponse> getProductsByCategory(Long productCategoryId) {
+        return productRepository.findByProductCategoryIdAndEnabled(productCategoryId, true).stream()
+                .map(this::toProductResponse)
                 .collect(Collectors.toList());
     }
 
@@ -173,6 +188,15 @@ public class DataService {
         return new ProductTypeResponse(pt.getId(), pt.getSyntax(), pt.getDescription());
     }
 
+    private ProductCategoryResponse toProductCategoryResponse(com.customsalesite.entity.ProductCategory pc) {
+        return new ProductCategoryResponse(
+                pc.getId(),
+                pc.getSyntax(),
+                pc.getDescription(),
+                pc.getProductType() != null ? pc.getProductType().getId() : null
+        );
+    }
+
     private BrandResponse toBrandResponse(Brand brand) {
         return new BrandResponse(
                 brand.getId(),
@@ -193,6 +217,14 @@ public class DataService {
                     .divide(BigDecimal.valueOf(100));
             salePrice = product.getPrice().subtract(discount);
         }
+
+        Long typeId = null;
+        String typeName = null;
+        if (product.getProductCategory() != null && product.getProductCategory().getProductType() != null) {
+            typeId = product.getProductCategory().getProductType().getId();
+            typeName = product.getProductCategory().getProductType().getSyntax();
+        }
+
         return new ProductResponse(
                 product.getId(),
                 product.getSyntax(),
@@ -202,8 +234,10 @@ public class DataService {
                 product.getSalePercent(),
                 salePrice,
                 product.getImages(),
-                product.getProductType() != null ? product.getProductType().getId() : null,
-                product.getProductType() != null ? product.getProductType().getSyntax() : null
+                typeId,
+                typeName,
+                product.getProductCategory() != null ? product.getProductCategory().getId() : null,
+                product.getProductCategory() != null ? product.getProductCategory().getSyntax() : null
         );
     }
 

@@ -11,8 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "product_type")
-public class ProductType {
+@Table(name = "product_category")
+public class ProductCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,8 +21,13 @@ public class ProductType {
 
     private String description;
 
-    @OneToMany(mappedBy = "productType", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<ProductCategory> categories;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_type_id", nullable = false)
+    private ProductType productType;
+
+    @OneToMany(mappedBy = "productCategory", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Product> products;
 
     private boolean enabled = true;
 }
+

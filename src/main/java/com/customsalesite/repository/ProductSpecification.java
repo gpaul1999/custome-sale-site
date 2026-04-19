@@ -27,7 +27,9 @@ public class ProductSpecification {
             }
 
             if (productTypeId != null) {
-                predicates.add(cb.equal(root.get("productType").get("id"), productTypeId));
+                // Filter by productType through productCategory
+                var category = root.join("productCategory", jakarta.persistence.criteria.JoinType.LEFT);
+                predicates.add(cb.equal(category.get("productType").get("id"), productTypeId));
             }
 
             if (keyword != null && !keyword.isBlank()) {

@@ -114,6 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var title = p.syntax || p.description || (p.id ? ('Sản phẩm ' + p.id) : '');
       var desc = p.description || '';
       var type = p.productTypeName || '';
+      var category = p.productCategoryName || '';
       var images = p.images || [];
       var price = p.price != null ? formatPrice(p.price) : '';
       var sale = p.salePrice != null ? formatPrice(p.salePrice) : '';
@@ -139,6 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
       html += '<div class="s-info">';
       html += '<div class="s-top">';
       if (type) html += '<span class="product-card-type">' + escapeHtml(type) + '</span>';
+      if (category) html += '<span class="product-card-type" style="background:var(--accent-light);color:var(--accent-dark);">' + escapeHtml(category) + '</span>';
       if (salePct) html += '<span class="badge-sale" style="margin-left:8px">-' + escapeHtml(salePct) + '</span>';
       html += '</div>';
 

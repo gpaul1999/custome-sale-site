@@ -18,6 +18,7 @@ public class AdminWebController {
     @GetMapping({"", "/", "/dashboard"})
     public String dashboard(Model model) {
         model.addAttribute("productTypeCount", adminService.listProductTypes().size());
+        model.addAttribute("categoryCount",    adminService.listProductCategories().size());
         model.addAttribute("brandCount",       adminService.listBrands().size());
         model.addAttribute("productCount",     adminService.listProducts().size());
         model.addAttribute("userCount",        adminService.listUsers().size());
@@ -79,6 +80,65 @@ public class AdminWebController {
         return "redirect:/admin/product-types";
     }
 
+    // ── Product Category ──────────────────────────────────────────────────────
+    @GetMapping("/product-categories")
+    public String productCategoryList(Model model) {
+        model.addAttribute("categories", adminService.listProductCategories());
+        return "admin/product-category/list";
+    }
+
+    @GetMapping("/product-categories/new")
+    public String productCategoryNew(Model model) {
+        model.addAttribute("category", new com.customsalesite.entity.ProductCategory());
+        model.addAttribute("productTypes", adminService.listEnabledProductTypes());
+        model.addAttribute("editMode", false);
+        return "admin/product-category/form";
+    }
+
+    @PostMapping("/product-categories/new")
+    public String productCategoryCreate(@ModelAttribute com.customsalesite.entity.ProductCategory category,
+                                        RedirectAttributes ra) {
+        if (category.getProductType() != null && category.getProductType().getId() != null) {
+            var type = adminService.getProductType(category.getProductType().getId());
+            category.setProductType(type);
+        }
+        adminService.saveProductCategory(category);
+        ra.addFlashAttribute("successMsg", "Đã tạo danh mục sản phẩm thành công.");
+        return "redirect:/admin/product-categories";
+    }
+
+    @GetMapping("/product-categories/{id}/edit")
+    public String productCategoryEdit(@PathVariable Long id, Model model) {
+        var category = adminService.getProductCategory(id);
+        model.addAttribute("category", category);
+        model.addAttribute("productTypes", adminService.listEnabledProductTypes());
+        model.addAttribute("editMode", true);
+        model.addAttribute("id", id);
+        return "admin/product-category/form";
+    }
+
+    @PostMapping("/product-categories/{id}/edit")
+    public String productCategoryUpdate(@PathVariable Long id,
+                                        @ModelAttribute com.customsalesite.entity.ProductCategory category,
+                                        RedirectAttributes ra) {
+        if (category.getProductType() != null && category.getProductType().getId() != null) {
+            var type = adminService.getProductType(category.getProductType().getId());
+            category.setProductType(type);
+        }
+        category.setId(id);
+        adminService.saveProductCategory(category);
+        ra.addFlashAttribute("successMsg", "Đã cập nhật danh mục sản phẩm.");
+        return "redirect:/admin/product-categories";
+    }
+
+    @PostMapping("/product-categories/{id}/toggle")
+    public String productCategoryToggle(@PathVariable Long id, RedirectAttributes ra) {
+        adminService.toggleProductCategory(id);
+        ra.addFlashAttribute("successMsg", "Đã thay đổi trạng thái.");
+        return "redirect:/admin/product-categories";
+    }
+
+    // ── Brand ──────────────────────────────────────────────────────────────────
     @GetMapping("/brands")
     public String brandList(Model model) {
         model.addAttribute("items", adminService.listBrands());
@@ -138,7 +198,7 @@ public class AdminWebController {
     @GetMapping("/products/new")
     public String productNew(Model model) {
         model.addAttribute("form", new ProductFullRequest());
-        model.addAttribute("productTypes", adminService.listEnabledProductTypes());
+        model.addAttribute("productCategories", adminService.listProductCategories());
         model.addAttribute("brands", adminService.listEnabledBrands());
         model.addAttribute("editMode", false);
         return "admin/product/form";
@@ -162,7 +222,9 @@ public class AdminWebController {
         form.setSaleOff(product.isSaleOff());
         form.setSalePercent(product.getSalePercent());
         form.setImages(product.getImages());
-        form.setProductTypeId(product.getProductType().getId());
+        if (product.getProductCategory() != null) {
+            form.setProductCategoryId(product.getProductCategory().getId());
+        }
         form.setEnabled(product.isEnabled());
         if (detail != null) {
             form.setVat(detail.isVat());
@@ -175,7 +237,7 @@ public class AdminWebController {
             form.setBrandId(detail.getBrand() != null ? detail.getBrand().getId() : null);
         }
         model.addAttribute("form", form);
-        model.addAttribute("productTypes", adminService.listEnabledProductTypes());
+        model.addAttribute("productCategories", adminService.listProductCategories());
         model.addAttribute("brands", adminService.listEnabledBrands());
         model.addAttribute("editMode", true);
         model.addAttribute("id", id);
