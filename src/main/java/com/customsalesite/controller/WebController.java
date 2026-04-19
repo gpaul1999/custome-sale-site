@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -48,28 +46,39 @@ public class WebController {
         List<ProductTypeResponse> productTypes = dataService.getAllProductTypes();
 
         Long activeTypeId = typeId;
+
+        // If categoryId is provided, find its type
+        if (categoryId != null && activeTypeId == null) {
+            // Need to find which type owns this category
+            for (ProductTypeResponse pt : productTypes) {
+                var cats = dataService.getProductCategoriesByType(pt.getId());
+                for (var cat : cats) {
+                    if (cat.getId().equals(categoryId)) {
+                        activeTypeId = pt.getId();
+                        break;
+                    }
+                }
+                if (activeTypeId != null) break;
+            }
+        }
+
         if (activeTypeId == null && !productTypes.isEmpty()) {
             activeTypeId = productTypes.get(0).getId();
         }
 
-        Map<Long, List<ProductResponse>> productsByType = new LinkedHashMap<>();
+        // Compute the product list to display
+        List<ProductResponse> activeProducts;
 
-        // If keyword search with filtered=true, show search results across ALL types
         if (filtered && keyword != null && !keyword.isBlank()) {
-            List<ProductResponse> searchResults = dataService.searchProductsWithScore(keyword);
-            for (ProductTypeResponse pt : productTypes) {
-                productsByType.put(pt.getId(), searchResults);
-            }
+            activeProducts = dataService.searchProductsWithScore(keyword);
+        } else if (categoryId != null) {
+            activeProducts = dataService.getProductsByCategory(categoryId);
+            filtered = true;
+        } else if (filtered) {
+            activeProducts = dataService.filterProducts(
+                    activeTypeId, keyword, minPrice, maxPrice, saleOnly, brandId, sortBy);
         } else {
-            // Normal tab-based browsing
-            for (ProductTypeResponse pt : productTypes) {
-                if (pt.getId().equals(activeTypeId) && filtered) {
-                    productsByType.put(pt.getId(), dataService.filterProducts(
-                            activeTypeId, keyword, minPrice, maxPrice, saleOnly, brandId, sortBy));
-                } else {
-                    productsByType.put(pt.getId(), dataService.getProductsByType(pt.getId()));
-                }
-            }
+            activeProducts = activeTypeId != null ? dataService.getProductsByType(activeTypeId) : List.of();
         }
 
         // Get categories for active type
@@ -80,9 +89,26 @@ public class WebController {
         List<BrandResponse> brandsForType =
                 activeTypeId != null ? dataService.getBrandsByProductType(activeTypeId) : List.of();
 
+        // Resolve display names for breadcrumb
+        final Long finalTypeId = activeTypeId;
+        final Long finalCategoryId = categoryId;
+
+        String activeTypeName = (finalTypeId != null) ? productTypes.stream()
+                .filter(pt -> pt.getId().equals(finalTypeId))
+                .map(ProductTypeResponse::getSyntax)
+                .findFirst().orElse(null) : null;
+
+        String activeCategoryName = (finalCategoryId != null) ? categoriesForType.stream()
+                .filter(cat -> cat.getId().equals(finalCategoryId))
+                .map(com.customsalesite.dto.ProductCategoryResponse::getSyntax)
+                .findFirst().orElse(null) : null;
+
         model.addAttribute("productTypes", productTypes);
-        model.addAttribute("productsByType", productsByType);
+        model.addAttribute("activeProducts", activeProducts);
         model.addAttribute("activeTypeId", activeTypeId);
+        model.addAttribute("activeTypeName", activeTypeName);
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("activeCategoryName", activeCategoryName);
         model.addAttribute("categoriesForType", categoriesForType);
         model.addAttribute("brandsForType", brandsForType);
         model.addAttribute("keyword", keyword);

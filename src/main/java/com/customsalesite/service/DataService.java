@@ -1,10 +1,7 @@
 package com.customsalesite.service;
 
 import com.customsalesite.dto.*;
-import com.customsalesite.entity.Brand;
-import com.customsalesite.entity.Product;
-import com.customsalesite.entity.ProductDetail;
-import com.customsalesite.entity.ProductType;
+import com.customsalesite.entity.*;
 import com.customsalesite.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -14,7 +11,9 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -272,5 +271,45 @@ public class DataService {
                 detail.getBrand() != null ? detail.getBrand().getLogo() : null,
                 detail.getBrand() != null ? detail.getBrand().getLongDescription() : null
         );
+    }
+
+    public List<ProductCategory> listProductCategories() {
+        return productCategoryRepository.findAll();
+    }
+
+    public List<Map<String, Object>> getProductTypesWithCategoriesAndBrands() {
+        return productTypeRepository.findByEnabled(true).stream()
+                .map(type -> {
+                    Map<String, Object> typeMap = new HashMap<>();
+                    typeMap.put("id", type.getId());
+                    typeMap.put("syntax", type.getSyntax());
+
+                    // Get categories for this type
+                    List<Map<String, Object>> categories = productCategoryRepository
+                            .findByProductTypeIdAndEnabled(type.getId(), true).stream()
+                            .map(category -> {
+                                Map<String, Object> catMap = new HashMap<>();
+                                catMap.put("id", category.getId());
+                                catMap.put("syntax", category.getSyntax());
+
+                                // Get brands for products in this category
+                                List<BrandResponse> brands = productRepository
+                                        .findByProductCategoryIdAndEnabled(category.getId(), true).stream()
+                                        .map(p -> p.getProductDetail())
+                                        .filter(pd -> pd != null && pd.getBrand() != null)
+                                        .map(pd -> pd.getBrand())
+                                        .distinct()
+                                        .map(this::toBrandResponse)
+                                        .collect(Collectors.toList());
+
+                                catMap.put("brands", brands);
+                                return catMap;
+                            })
+                            .collect(Collectors.toList());
+
+                    typeMap.put("categories", categories);
+                    return typeMap;
+                })
+                .collect(Collectors.toList());
     }
 }

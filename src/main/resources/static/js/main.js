@@ -397,4 +397,112 @@ document.addEventListener('DOMContentLoaded', function () {
     return text.substring(0, max - 1).trim() + '…';
   }
 
+  // ── Mega Menu ─────────────────────────────────────────────────────────────
+  var servicesContent  = document.getElementById('servicesMenuContent');
+  var headerMenuContent = document.getElementById('headerMenuContent');
+
+  if (servicesContent || headerMenuContent) {
+    fetch('/api/data/menu/product-types')
+      .then(r => r.json())
+      .then(data => {
+        if (servicesContent)  renderMenuInto(servicesContent,  data);
+        if (headerMenuContent) renderMenuInto(headerMenuContent, data);
+      })
+      .catch(e => console.error('Menu load failed:', e));
+  }
+
+  var typeIcons = {
+    'Di động': '📋',
+    'Truyền hình': '📋',
+    'Internet': '📋',
+    'Doanh nghiệp': '📋'
+  };
+
+  function getTypeIcon(typeName) {
+    return '📋'; // Single icon for all types
+  }
+
+  function renderMenuInto(content, types) {
+    if (!content) return;
+
+    // 3 separate columns
+    content.innerHTML =
+      '<div class="services-column" id="menuCol1"></div>' +
+      '<div class="services-column" id="menuCol2"></div>' +
+      '<div class="services-column" id="menuCol3"></div>';
+
+    var col1 = document.getElementById('menuCol1');
+    var col2 = document.getElementById('menuCol2');
+    var col3 = document.getElementById('menuCol3');
+
+    // Populate column 1 with types
+    types.forEach(function(type, typeIdx) {
+      var el = document.createElement('div');
+      el.className = 'services-item services-type-item';
+      el.textContent = '📋 ' + type.syntax;
+      el.setAttribute('data-type-id', type.id);
+
+      // Hover: populate col2 with categories
+      el.addEventListener('mouseenter', function() {
+        // Highlight active type
+        col1.querySelectorAll('.services-item').forEach(function(i) { i.classList.remove('active'); });
+        el.classList.add('active');
+
+        col2.innerHTML = '';
+        col3.innerHTML = '';
+
+        if (!type.categories || !type.categories.length) {
+          col2.innerHTML = '<div class="services-item disabled">Không có danh mục</div>';
+          return;
+        }
+
+        type.categories.forEach(function(cat) {
+          var catEl = document.createElement('div');
+          catEl.className = 'services-item services-cat-item';
+          catEl.textContent = '📦 ' + cat.syntax;
+          catEl.setAttribute('data-cat-id', cat.id);
+          catEl.setAttribute('data-type-id', type.id);
+
+          // Hover: populate col3 with brands
+          catEl.addEventListener('mouseenter', function() {
+            col2.querySelectorAll('.services-item').forEach(function(i) { i.classList.remove('active'); });
+            catEl.classList.add('active');
+
+            col3.innerHTML = '';
+
+            if (!cat.brands || !cat.brands.length) {
+              col3.innerHTML = '<div class="services-item disabled">Không có thương hiệu</div>';
+              return;
+            }
+
+            cat.brands.forEach(function(brand) {
+              var brandEl = document.createElement('div');
+              brandEl.className = 'services-item services-brand-item';
+              brandEl.textContent = '🔗 ' + brand.name;
+
+              brandEl.addEventListener('click', function() {
+                window.location.href = '/services?typeId=' + type.id + '&categoryId=' + cat.id + '&filtered=true';
+              });
+
+              col3.appendChild(brandEl);
+            });
+          });
+
+          // Click category
+          catEl.addEventListener('click', function() {
+            window.location.href = '/services?typeId=' + type.id + '&categoryId=' + cat.id + '&filtered=true';
+          });
+
+          col2.appendChild(catEl);
+        });
+      });
+
+      // Click type
+      el.addEventListener('click', function() {
+        window.location.href = '/services?typeId=' + type.id + '&filtered=true';
+      });
+
+      col1.appendChild(el);
+    });
+  }
 });

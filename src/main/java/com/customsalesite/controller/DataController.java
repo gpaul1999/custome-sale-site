@@ -72,4 +72,9 @@ public class DataController {
     public ResponseEntity<List<ProductResponse>> search(@RequestParam("q") String q) {
         return ResponseEntity.ok(dataService.searchProducts(q));
     }
+
+    @GetMapping("/menu/product-types")
+    public ResponseEntity<?> getMenuData() {
+        return ResponseEntity.ok(dataService.getProductTypesWithCategoriesAndBrands());
+    }
 }

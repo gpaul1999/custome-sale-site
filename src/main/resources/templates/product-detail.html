@@ -11,22 +11,27 @@
 
 <div th:replace="~{fragments/header :: header('services')}"></div>
 
-<!-- Breadcrumb hero -->
-<section class="page-hero">
-  <div class="container">
-    <h1 th:text="${product.syntax}">Tên sản phẩm</h1>
-    <p th:text="${product.description}">Mô tả ngắn</p>
-    <ul class="breadcrumb">
-      <li><a href="/">Trang chủ</a></li>
-      <li><a href="/services">Dịch vụ</a></li>
-      <li th:text="${product.syntax}">Sản phẩm</li>
-    </ul>
-  </div>
-</section>
-
 <!-- Main content -->
 <section class="section">
   <div class="container">
+
+    <!-- Breadcrumb -->
+    <nav class="filter-breadcrumb" style="margin-bottom:24px;">
+      <a href="/services" class="filter-bc-item">🏠 Tất cả</a>
+      <th:block th:if="${product.productTypeId != null}">
+        <span class="filter-bc-sep">›</span>
+        <a th:href="@{/services(typeId=${product.productTypeId})}"
+           class="filter-bc-item" th:text="${product.productTypeName}"></a>
+      </th:block>
+      <th:block th:if="${product.productCategoryId != null}">
+        <span class="filter-bc-sep">›</span>
+        <a th:href="@{/services(typeId=${product.productTypeId},categoryId=${product.productCategoryId},filtered=true)}"
+           class="filter-bc-item" th:text="${product.productCategoryName}"></a>
+      </th:block>
+      <span class="filter-bc-sep">›</span>
+      <span class="filter-bc-item filter-bc-active" th:text="${product.syntax}"></span>
+    </nav>
+
     <div class="detail-layout">
 
       <!-- CỘT TRÁI: Gallery ảnh -->
@@ -264,4 +269,3 @@ function switchImg(thumb, src) {
 </script>
 </body>
 </html>
-
