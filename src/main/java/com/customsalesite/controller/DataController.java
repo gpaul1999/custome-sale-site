@@ -48,6 +48,11 @@ public class DataController {
         return ResponseEntity.ok(dataService.getProductById(id));
     }
 
+    @GetMapping("/products/{id}/detail")
+    public ResponseEntity<ProductDetailResponse> getProductDetailByProductId(@PathVariable Long id) {
+        return ResponseEntity.ok(dataService.getProductDetailByProductId(id));
+    }
+
     @GetMapping("/products/by-type/{productTypeId}")
     public ResponseEntity<List<ProductResponse>> getProductsByType(@PathVariable Long productTypeId) {
         return ResponseEntity.ok(dataService.getProductsByType(productTypeId));
