@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class CartController {
 
@@ -30,22 +30,14 @@ public class CartController {
     private final ObjectMapper objectMapper;
     private final DataService dataService;
 
-    // ─── Page ─────────────────────────────────────────────────────────────────
-    @GetMapping("/cart")
-    public String cartPage() {
-        return "cart";
-    }
-
     // ─── API: read cart ────────────────────────────────────────────────────────
     @GetMapping("/api/cart")
-    @ResponseBody
     public List<CartItem> getCart(HttpServletRequest request) {
         return readCart(request);
     }
 
     // ─── API: add ─────────────────────────────────────────────────────────────
     @PostMapping("/api/cart/add")
-    @ResponseBody
     public ResponseEntity<List<CartItem>> addToCart(@RequestBody CartRequest req,
                                                      HttpServletRequest request,
                                                      HttpServletResponse response) {
@@ -64,7 +56,6 @@ public class CartController {
 
     // ─── API: update quantity ─────────────────────────────────────────────────
     @PostMapping("/api/cart/update")
-    @ResponseBody
     public ResponseEntity<List<CartItem>> updateCart(@RequestBody CartRequest req,
                                                       HttpServletRequest request,
                                                       HttpServletResponse response) {
@@ -83,7 +74,6 @@ public class CartController {
 
     // ─── API: remove ──────────────────────────────────────────────────────────
     @PostMapping("/api/cart/remove")
-    @ResponseBody
     public ResponseEntity<List<CartItem>> removeFromCart(@RequestBody CartRequest req,
                                                           HttpServletRequest request,
                                                           HttpServletResponse response) {
@@ -95,7 +85,6 @@ public class CartController {
 
     // ─── API: clear ───────────────────────────────────────────────────────────
     @PostMapping("/api/cart/clear")
-    @ResponseBody
     public ResponseEntity<Void> clearCart(HttpServletResponse response) {
         writeCart(new ArrayList<>(), response);
         return ResponseEntity.ok().build();
@@ -103,7 +92,6 @@ public class CartController {
 
     // ─── API: products info for cart ──────────────────────────────────────────
     @PostMapping("/api/cart/products")
-    @ResponseBody
     public ResponseEntity<List<ProductResponse>> getCartProducts(@RequestBody List<Long> ids) {
         List<ProductResponse> result = new ArrayList<>();
         for (Long id : ids) {

@@ -41,6 +41,19 @@ public class JwtUtil {
                 .compact();
     }
 
+    public String generateAdminToken(String username) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", "ADMIN");
+
+        return Jwts.builder()
+                .claims(claims)
+                .subject(username)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     public Claims extractClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())

@@ -82,6 +82,15 @@ public class DataService {
                 .collect(Collectors.toList());
     }
 
+    public ProductDetailResponse getProductDetailByProductId(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found: " + productId));
+        if (product.getProductDetail() == null) {
+            throw new RuntimeException("ProductDetail not found for product: " + productId);
+        }
+        return toProductDetailResponse(product.getProductDetail());
+    }
+
     public List<ProductResponse> getProductsByCategory(Long productCategoryId) {
         return productRepository.findByProductCategoryIdAndEnabled(productCategoryId, true).stream()
                 .map(this::toProductResponse)

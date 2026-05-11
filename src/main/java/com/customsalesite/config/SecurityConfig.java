@@ -1,8 +1,8 @@
 package com.customsalesite.config;
 
+import com.customsalesite.security.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -12,7 +12,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -23,7 +28,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    /** Tài khoản admin tạm thời — sẽ thay bằng DB-backed UserDetailsService khi phân quyền */
     @Bean
     public UserDetailsService adminUserDetailsService() {
         var admin = User.builder()
@@ -34,56 +38,34 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(admin);
     }
 
-    /** Filter chain cho khu vực /admin/** — session-based form login — ưu tiên cao hơn */
     @Bean
-    @Order(1)
-    public SecurityFilterChain adminFilterChain(HttpSecurity http,
-                                                UserDetailsService userDetailsService) throws Exception {
-        http
-            .securityMatcher("/admin/**")
-            .csrf(csrf -> csrf.disable())
-            .userDetailsService(userDetailsService)
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/admin/login").permitAll()
-                .anyRequest().hasRole("ADMIN")
-            )
-            .formLogin(form -> form
-                .loginPage("/admin/login")
-                .loginProcessingUrl("/admin/login")
-                .defaultSuccessUrl("/admin/dashboard", true)
-                .failureUrl("/admin/login?error=true")
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutRequestMatcher(new AntPathRequestMatcher("/admin/logout"))
-                .logoutSuccessUrl("/admin/login?logout=true")
-            );
-        return http.build();
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
-    /** Filter chain cho phần còn lại — stateless JWT */
     @Bean
-    @Order(2)
-    public SecurityFilterChain defaultFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
         http
-            // CSRF protection is disabled because this is a stateless REST API using JWT tokens.
-            // CSRF attacks are not relevant for APIs that don't use cookies or sessions.
-            // All authentication is done via JWT tokens in the Authorization header.
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/admin/auth/login").permitAll()
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/api/data/**", "/api/cart/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
-                // Public web pages and static resources
-                .requestMatchers("/", "/about", "/services", "/contact",
-                        "/login", "/register", "/product/**", "/cart").permitAll()
-                .requestMatchers("/api/cart/**", "/api/data/**").permitAll()
-                .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                 .anyRequest().authenticated()
             )
-            // Frame options disabled for H2 console access in development
-            .headers(headers -> headers.frameOptions(frame -> frame.disable()));
-
+            .headers(h -> h.frameOptions(f -> f.disable()))
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }
